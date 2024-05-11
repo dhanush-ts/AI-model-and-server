@@ -86,14 +86,31 @@ def calculate_credit():
 
 @app.route("/sanction", methods=["POST"])
 def sanctioned():
-    pdf_file = request.files["pdf_file"]
-    pdf_file_path = "./uploaded.pdf"
-    pdf_file.save(pdf_file_path)
-    # Extract text from the PDF file
-    extracted_text = extract_text_from_pdf(pdf_file_path)
+    pdf_files = request.files.getlist("pdf_files")
+    results = []
+    for pdf_file in pdf_files:
+        pdf_file_path = "./uploaded.pdf"
+        pdf_file.save(pdf_file_path)
+        # Extract text from the PDF file
+        extracted_text = extract_text_from_pdf(pdf_file_path)
+        result = {
+            "sanctioned_amount": int("".join(re.findall("Sanction amount Rs. (\d*(?:(\d*,?)*))", extracted_text)[0][0].split(","))),
+            "PAN": re.findall("PAN: (.*)", extracted_text)[0]
+        }
+        results.append(result)
+    return jsonify(results)
 
-    return { "sanctioned":int("".join(re.findall("Sanction amount Rs. (\d*(?:(\d*,?)*))",extracted_text)[0][0].split(","))),
-         "PAN":re.findall("PAN: (.*)",extracted_text)[0] }
+
+# @app.route("/sanction", methods=["POST"])
+# def sanctioned():
+#     pdf_file = request.files["pdf_file"]
+#     pdf_file_path = "./uploaded.pdf"
+#     pdf_file.save(pdf_file_path)
+#     # Extract text from the PDF file
+#     extracted_text = extract_text_from_pdf(pdf_file_path)
+
+#     return { "sanctioned":int("".join(re.findall("Sanction amount Rs. (\d*(?:(\d*,?)*))",extracted_text)[0][0].split(","))),
+#          "PAN":re.findall("PAN: (.*)",extracted_text)[0] }
 
 
 if __name__ == "__main__":
