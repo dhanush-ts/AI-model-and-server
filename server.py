@@ -98,6 +98,20 @@ def sanctioned():
             "PAN": re.findall("PAN: (.*)", extracted_text)[0]
         }
         results.append(result)
+    if not results:
+        return [-1]
+    v = results[0]["PAN"].split()[0]
+    for i in results[1:]:
+        if i["PAN"].split()[0]!=v:
+            print(i["PAN"],v,)
+            return [-1]
+    s = 0
+    for i in results:
+        s+=i["sanctioned_amount"]
+    results = {
+        "PAN":v,
+        "sanctioned_amount":s
+    }
     return jsonify(results)
 
 
