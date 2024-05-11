@@ -4,7 +4,6 @@ import re
 import numpy as np
 
 app = Flask(__name__)
-
 def extract_text_from_pdf(pdf_path):
     text = ""
     with open(pdf_path, "rb") as file:
